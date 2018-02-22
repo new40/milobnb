@@ -41,14 +41,26 @@
       <div class="row row-divided">
         <!-- <div class="col-md-7 column-one"> -->
         <div class="col-md-6 col-md-offset-3 room_content_left">
-          <h3>Is the pin in the right place?</h3>
-          <form action="/become-a-host/amenities" method="POST" id="location_map_form" style="margin-top:30px;">
+          <h3>What amenities do you offer?</h3>
+          <form action="/become-a-host/location/submit" method="POST" id="location_form" style="margin-top:30px;">
             <div class="form-group">
-              <h4>Only confirmed guests will see this, so they know how to get to your place.</h4>
-              <h5 style="margin-top:30px;">{{ address }}</h5>
+              <div class="checkbox input-lg">
+                <label>
+                  <input type="checkbox" value="essentials">
+                  Essentials
+                  <h5>Towels, bed sheets, soap, toilet paper, and pillows</h5>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="checkbox input-lg">
+                <label>
+                  <input type="checkbox" value="wifi">
+                  Wifi
+                </label>
+              </div>
             </div>
           </form>
-          <div id="map"></div>
           <hr class="divide_line">
           <div class="row" id="inner_div_footer">
             <div class="col-md-3">
@@ -57,37 +69,13 @@
             <div class="col-md-6">
             </div>
             <div class="col-md-3">
-              <button type="button" class="btn btn-primary btn-lg btn-block" id="location_map_next_btn">Next</button>
+              <button type="button" class="btn btn-primary btn-lg btn-block" id="location_next_btn">Next</button>
             </div>
           </div>
         </div>
       </div>
     </div><!-- /.container -->
 
-    <script>
-      function initMap() {
-        var location = {{ loc|safe }};
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          center: location,
-          zoomControl: true,
-          zoomControlOptions: {
-            position: google.maps.ControlPosition.LEFT_TOP
-          },
-          mapTypeControl: false,
-          scaleControl: false,
-          streetViewControl: false,
-          rotateControl: false,
-          scrollwheel: false,
-          disableDoubleClickZoom: true,
-          fullscreenControl: false
-        });
-        var marker = new google.maps.Marker({
-          position: location,
-          map: map
-        });
-      }
-    </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -96,11 +84,9 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <!-- Firebase JavaScript -->
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
-    <!-- Google Map -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChQ8A11Bmn1MlZ8q3-HcSUijfhf3-WtI0&callback=initMap"></script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/util/location_map.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/util/location.js') }}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
   </body>

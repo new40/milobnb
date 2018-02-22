@@ -220,19 +220,10 @@ def geo():
 def location_saved(id):
     return render_template('become-a-host/location_map.html', address=request.args.get('add'), post=request.args.get('post'), loc=request.args.get('loc'))
 
-# @app.route('/geotest')
-# def geotest():
-#     search_payload = {"key":googleMap_key, "query":"방배동 947-6, seocho, seoul"}
-#     search_req = requests.get(search_url, params=search_payload)
-#     search_json = search_req.json()
-#
-#     place_id = search_json["results"][0]["place_id"]
-#
-#     details_payload = {"key":googleMap_key, "placeid":place_id}
-#     details_resp = requests.get(details_url, params=details_payload)
-#     details_json = details_resp.json()
-#
-    # return jsonify({ 'hoho': details_json, 'address' : details_json["result"]["formatted_address"], "postCode": details_json["result"]["address_components"][5]["long_name"], "latlng": details_json["result"]["geometry"]["location"] })
+@app.route('/become-a-host/amenities', methods=['POST'])
+@login_required
+def amenities(current_user):
+    return render_template('become-a-host/amenities.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
