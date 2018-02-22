@@ -43,20 +43,12 @@
         <div class="col-md-6 col-md-offset-3 room_content_left">
           <h3>What amenities do you offer?</h3>
           <form action="/become-a-host/location/submit" method="POST" id="location_form" style="margin-top:30px;">
-            <div class="form-group">
-              <div class="checkbox input-lg">
+            <div class="form-group" id="amenities_list">
+              <div class="checkbox input-lg" style="margin-bottom:30px;">
                 <label>
                   <input type="checkbox" value="essentials">
                   Essentials
                   <h5>Towels, bed sheets, soap, toilet paper, and pillows</h5>
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="checkbox input-lg">
-                <label>
-                  <input type="checkbox" value="wifi">
-                  Wifi
                 </label>
               </div>
             </div>
@@ -86,7 +78,7 @@
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/util/location.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/util/amenities.js') }}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
   </body>
