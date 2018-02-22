@@ -1,0 +1,35 @@
+
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="text-center">Looks like you already have an account.</a> </h4>
+      <h4 class="text-center">Please log in instead.</a> </h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <img class="img-circle center-block" src="{{ url_for('static', filename='img/testimonials-1.jpg') }}" alt="Generic placeholder image" width="140" height="140">
+            <h4 class="text-center">{{ firstname }}</h4>
+            <h5 class="text-center" id="logged_user_email">{{ email }}</h5>
+          </div>
+        </div><!-- /.row -->
+        <div class="form-group has-feedback">
+          <input type="password" class="form-control input-lg" placeholder="password" id="logged_user_password" name="password">
+          <span class="glyphicon glyphicon-lock form-control-feedback" aria-hidden="true"></span>
+        </div>
+        <button id="logged_user_modal_submit" class="btn btn-danger btn-lg btn-block">Log in</button>
+
+    </div>
+    <div class="modal-footer">
+      <div class="row">
+        <div class="col-lg-5">
+          <h5 class="text-center"><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#logInModal">Login with a different account</a></h5>
+        </div>
+        <div class="col-lg-3 col-md-offset-4">
+          <h5 class="text-center"><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#signUpModal">Reset password</a></h5>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
