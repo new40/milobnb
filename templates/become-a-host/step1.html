@@ -41,28 +41,42 @@
       <div class="row row-divided">
         <!-- <div class="col-md-7 column-one"> -->
         <div class="col-md-6 col-md-offset-3 room_content_left">
-          <h3>What amenities do you offer?</h3>
-          <form action="/become-a-host/step1" method="POST" id="amenities_form" style="margin-top:30px;">
-            <div class="form-group" id="amenities_list">
-              <div class="checkbox input-lg" style="margin-bottom:30px;">
-                <label>
-                  <input type="checkbox" value="Essentials">
-                  Essentials
-                  <h5>Towels, bed sheets, soap, toilet paper, and pillows</h5>
-                </label>
+          <h2>Great progress, {{ user.firstname }}!</h2>
+          <h4>Now let's get some details about your place so you can publish your listing.</h4>
+          <form action="/become-a-host/photo" method="POST" id="step1_form" style="margin-top:30px;">
+            <div class="form-group" id="step1">
+              <div class="row">
+                <div class="col-md-8">
+                  <h5>Beds, bathrooms, amenities, and more</h5>
+                  <a href="#">Change</a>
+                </div>
+                <div class="col-md-4 text-right">
+                  <button type="button" class="btn btn-success btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+                </div>
+              </div>
+            </div>
+            <hr class="divide_line">
+            <div class="form-group" id="step2">
+              <div class="row">
+                <div class="col-md-8">
+                  <h5>STEP 2</h5>
+                  <h3>Set the scene</h3>
+                  <h5>Photo, short description, title</h5>
+                  <p><button type="button" class="btn btn-primary" id="location_next_btn">Continue</button></p>
+                </div>
+              </div>
+            </div>
+            <hr class="divide_line">
+            <div class="form-group" id="step3">
+              <div class="row">
+                <div class="col-md-8" style="color:#D3D3D3">
+                  <h5>STEP 3</h5>
+                  <h3>Get ready for guests</h3>
+                  <h5>Booking setting, calendar, price</h5>
+                </div>
               </div>
             </div>
           </form>
-          <hr class="divide_line">
-          <div class="row" id="inner_div_footer">
-            <div class="col-md-3">
-              <button type="button" class="btn btn-primary btn-lg btn-block" onclick="history.back()">Back</button>
-            </div>
-            <div class="col-md-6">
-            </div>
-            <div class="col-md-3">
-              <button type="button" class="btn btn-primary btn-lg btn-block" id="amenities_btn">Next</button>
-            </div>
           </div>
         </div>
       </div>
@@ -77,7 +91,7 @@
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/util/amenities.js') }}"></script>
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
   </body>

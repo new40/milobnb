@@ -11,17 +11,17 @@ $(document).ready(function() {
     $('#amenities_list').append($div);
   });
 
-  $('#location_map_next_btn').click(function() {
+  $('#amenities_btn').click(function() {
     event.preventDefault();
     chk_idToken();
     if (idToken != null) {
       $('<input />').attr('type', 'hidden')
         .attr('name', 'hidden_input_token')
         .attr('value', idToken)
-       .appendTo('#location_map_form');
-       $('#location_map_form').submit();
+       .appendTo('#amenities_form');
+       $('#amenities_form').submit();
     } else {
-      console.log("plz log in!(location_map_page)");
+      console.log("plz log in!(amenities_page)");
       // $('#logInModal').modal('show');
     }
   });
