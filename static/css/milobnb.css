@@ -80,6 +80,24 @@ header.masthead .site-heading {
   overflow:hidden;
 }
 
+#top_photos_upload{
+  height: 300px;
+  border: 2px dotted #D3D3D3;
+  border-width: medium;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#photos_upload{
+  height: 150px;
+  border: 2px dotted #D3D3D3;
+  border-width: medium;
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
 

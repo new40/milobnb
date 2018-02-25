@@ -19,7 +19,7 @@
     <link href="{{ url_for('static', filename='css/ie10-viewport-bug-workaround.css') }}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{{ url_for('static', filename='css/jumbotron.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/milobnb.css') }}" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -51,7 +51,7 @@
                   <a href="#">Change</a>
                 </div>
                 <div class="col-md-4 text-right">
-                  <button type="button" class="btn btn-success btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+                  <span class="btn btn-success btn-circle"><i class="glyphicon glyphicon-ok"></i></span>
                 </div>
               </div>
             </div>
@@ -62,7 +62,7 @@
                   <h5>STEP 2</h5>
                   <h3>Set the scene</h3>
                   <h5>Photo, short description, title</h5>
-                  <p><button type="button" class="btn btn-primary" id="location_next_btn">Continue</button></p>
+                  <p><button type="button" class="btn btn-primary" id="step1_btn">Continue</button></p>
                 </div>
               </div>
             </div>
@@ -91,7 +91,7 @@
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/util/step1.js') }}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
   </body>

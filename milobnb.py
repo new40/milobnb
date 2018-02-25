@@ -230,5 +230,11 @@ def amenities(current_user):
 def step1(current_user):
     return render_template('become-a-host/step1.html', user=current_user)
 
+@app.route('/become-a-host/photo', methods=['POST'])
+@login_required
+def photo(current_user):
+    return render_template('become-a-host/photos.html', user=current_user)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
