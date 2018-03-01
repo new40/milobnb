@@ -43,17 +43,19 @@
         <div class="col-md-6 col-md-offset-3 room_content_left">
           <h3>Show travelers what your space looks like</h3>
           <p class="help-block">Many hosts have at least 8 photos. You can start with just one photo and come back later to add more. Including photos of all the spaces a guest can use helps guests imagine staying at your place.</p>
-          <form action="" method="POST" enctype="multipart/form-data" id="photo_form" style="margin-top:30px;">
-            <div class="text-center" id="top_photos_upload">
-              <label class="btn btn-danger btn-lg">
-                <input type="file" id="top_add_photo_btn" style="display: none;"><i class="glyphicon glyphicon-upload"></i> Upload Photos</input>
-              </label>
+          <form action="/upload" method="POST" enctype="multipart/form-data" id="photo_form" style="margin-top:30px;">
+            <div id="top_photos_upload_div">
+              <div class="text-center" id="top_photos_upload">
+                <label class="btn btn-danger btn-lg">
+                  <input type="file" name="photo" id="top_add_photo" style="display: none;"><i class="glyphicon glyphicon-upload"></i> Upload Photos</input>
+                </label>
+              </div>
             </div>
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-4" id="photos_div">
                 <div class="text-center hidden" id="photos_upload">
                   <label class="btn btn-danger">
-                    <input type="file" id="add_photo_btn" style="display: none;"><i class="glyphicon glyphicon-upload"></i> Add another</input>
+                    <input type="file" name="photo" id="add_photo" style="display: none;"><i class="glyphicon glyphicon-upload"></i> Add another</input>
                   </label>
                 </div>
               </div>
@@ -74,6 +76,26 @@
       </div>
     </div><!-- /.container -->
 
+    {% raw %}
+    <script id="top_photo-template" type="text/x-handlebars-template">
+      <div id="top_photo" style="position: relative">
+        <img class='img-responsive img-thumbnail has-feedback' src='/static/img/upload/{{ filename }}' style='width:100%;' alt="Responsive image">
+        <a class="btn btn-default btn-xs pull-right delbtn" id="photo_del_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-remove"></i></a>
+        <a class="btn btn-default btn-xs pull-right delbtn hidden" id="photo_remove_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-trash"></i> Remove?</a>
+      </div>
+    </script>
+
+    <script id="photos-template" type="text/x-handlebars-template">
+      <div class="col-md-4">
+        <div class="text-center" id="added_photos" style="position: relative">
+          <img class='img-responsive img-thumbnail has-feedback' src='/static/img/upload/{{ filename }}' style='width:100%;' alt="Responsive image">
+          <a class="btn btn-default btn-xs pull-right delbtn" id="photo_del_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-remove"></i></a>
+          <a class="btn btn-default btn-xs pull-right delbtn hidden" id="photo_remove_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-trash"></i> Remove?</a>
+        </div>
+      </div>
+    </script>
+    {% endraw %}
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Bootstrap core JavaScript -->
@@ -81,6 +103,9 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <!-- Firebase JavaScript -->
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <!-- Handlebars JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+    <!-- <script src="{{ url_for('static', filename='js/handlebars-v4.0.11.js') }}"></script> -->
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util/upload_photos.js') }}"></script>

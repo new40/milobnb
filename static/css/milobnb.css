@@ -98,6 +98,15 @@ header.masthead .site-heading {
   align-items: center;
   justify-content: center;
 }
+
+#added_photos{
+  height: 150px;
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
 

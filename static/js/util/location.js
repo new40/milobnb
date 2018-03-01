@@ -260,6 +260,7 @@ $(document).ready(function() {
 
   var req = $.get("/geo");
   req.done(function(data) {
+    console.log(data);
     $.each(countries, function(index, value){
       isSelected = (value[0] === data.country);
       $option = $('<option>')
@@ -269,7 +270,7 @@ $(document).ready(function() {
       $select.append($option);
     });
     $("#state").val(data.state);
-    $("#city").val(data.city + "-gu");
+    $("#city").val(data.city);
   });
 
   $('#location_next_btn').click(function() {

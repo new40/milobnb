@@ -1,12 +1,14 @@
 #-*- coding:utf-8 -*-
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
-import requests
+import requests, os
 import firebase_admin
 from firebase_admin import credentials, auth
+from firebase_admin import storage
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 import geocoder
 # from model import Users
 
@@ -14,15 +16,24 @@ app = Flask(__name__)
 
 #related to firebase
 cred = credentials.Certificate('/Users/skw/Documents/milobnb-1512790607233-firebase-adminsdk-u2og9-a54d5f8c48.json')
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'milobnb-1512790607233.appspot.com'
+})
+
+bucket = storage.bucket()
 
 # related to google map
 googleMap_key = "AIzaSyChQ8A11Bmn1MlZ8q3-HcSUijfhf3-WtI0"
 search_url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
 details_url = "https://maps.googleapis.com/maps/api/place/details/json"
+geo_url = "https://maps.googleapis.com/maps/api/geocode/json"
 
 app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
+
+photos = UploadSet('photos', IMAGES)
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/img/upload'
+configure_uploads(app, photos)
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +86,10 @@ def login_required(f):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/testing', methods=['GET'])
+def testing():
+    return render_template('testing.html')
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -235,6 +250,18 @@ def step1(current_user):
 def photo(current_user):
     return render_template('become-a-host/photos.html', user=current_user)
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    # if request.method == 'POST':
+    # TODO: add a folder name using date
+    filename = photos.save(request.files['file'])
+    return filename
+    # return "Do not uploaded"
+
+@app.route('/delete/<filename>')
+def delete(filename):
+    os.remove(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], filename))
+    return jsonify({'result': True})
 
 if __name__ == '__main__':
     app.run(debug=True)
