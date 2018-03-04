@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
-import requests, os
+import requests, os, json
 import firebase_admin
 from firebase_admin import credentials, auth
 from firebase_admin import storage
@@ -10,7 +10,7 @@ from datetime import datetime
 from functools import wraps
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import geocoder
-# from model import Users
+# from model import *
 
 app = Flask(__name__)
 
@@ -35,14 +35,98 @@ photos = UploadSet('photos', IMAGES)
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/img/upload'
 configure_uploads(app, photos)
 
-class Users(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Text)
+    password = db.Column(db.Text, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    confirm_email = db.Column(db.SmallInteger)
+    phone_num = db.Column(db.Integer, unique=True)
     firstname = db.Column(db.String(255))
     lastname = db.Column(db.String(255))
-    password = db.Column(db.Text, nullable=False)
-    uid = db.Column(db.Text)
-    email = db.Column(db.String(255), unique=True, nullable=False)
     date_of_birth = db.Column(db.DateTime)
+    login_with = db.Column(db.SmallInteger)
+    facebook_id = db.Column(db.String(255))
+    twitter_id = db.Column(db.String(255))
+    about = db.Column(db.Text)
+    img_url = db.Column(db.String(500))
+    created = db.Column(db.DateTime)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+    properties = db.relationship('Property', backref='user', lazy='dynamic')
+
+class Property(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    room_type = db.Column(db.String(50))
+    category = db.Column(db.Integer, db.ForeignKey('category.id'))
+    subcategory = db.Column(db.Integer)
+    space_for = db.Column(db.String(10))
+    country = db.Column(db.String(50))
+    state = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    address = db.Column(db.Text)
+    add_opt = db.Column(db.Text)
+    zip_code = db.Column(db.String(50))
+    latitude = db.Column(db.String(50))
+    longitude = db.Column(db.String(50))
+    bedroom_cnt = db.Column(db.String(10))
+    bed_cnt = db.Column(db.String(10))
+    bethroom_cnt = db.Column(db.String(10))
+    accomodates_cnt = db.Column(db.String(10))
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    min_stay = db.Column(db.SmallInteger)
+    max_stay = db.Column(db.SmallInteger)
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+    amenities = db.relationship('Property_amenities', backref='property', lazy='dynamic')
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text)
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+    subcategories = db.relationship('Subcategory', backref='category', lazy='dynamic')
+
+class Subcategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text)
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+
+    @property
+    def serialize(self):
+        return {
+        'id': self.id,
+        'category_id': self.category_id,
+        'name': self.name,
+        'description': self.description
+        }
+
+class Property_amenities(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+    amenity_id = db.relationship('amenity', backref='amenity_id', lazy='dynamic')
+
+class amenity(db.Model):
+    id = db.Column(db.Integer, db.ForeignKey('property_amenities.id'), primary_key=True)
+    name = db.Column(db.String(255))
+    image_url = db.Column(db.String(500))
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
 
 def token_required(f):
     @wraps(f)
@@ -57,7 +141,7 @@ def token_required(f):
 
         try:
             decoded_token = auth.verify_id_token(token)
-            current_user = Users.query.filter_by(email=decoded_token['email']).first()
+            current_user = User.query.filter_by(email=decoded_token['email']).first()
         except:
             return jsonify({'message' : 'Token is invalid!', 'token' : token}), 401
 
@@ -75,7 +159,7 @@ def login_required(f):
 
         try:
             decoded_token = auth.verify_id_token(token)
-            current_user = Users.query.filter_by(email=decoded_token['email']).first()
+            current_user = User.query.filter_by(email=decoded_token['email']).first()
         except:
             return jsonify({'message' : 'Token is invalid!!', 'token' : token}), 401
 
@@ -102,7 +186,7 @@ def signup():
     birthday = dt.strftime("%Y-%m-%d")
 
     #login modal for already signed up user
-    ex_user = Users.query.filter_by(email=email).first()
+    ex_user = User.query.filter_by(email=email).first()
     if ex_user:
         return render_template('section/logged_user_modal.html', firstname=ex_user.firstname, email=email)
 
@@ -118,7 +202,7 @@ def signup():
         if not user.uid:
             return jsonify({ 'message' : 'Sign up failed!'}), 401
 
-        db_user = Users(email=email, firstname=firstname, lastname=lastname, password=password, date_of_birth=dt, uid=user.uid)
+        db_user = User(email=email, firstname=firstname, lastname=lastname, password=password, date_of_birth=dt, uid=user.uid)
         db.session.add(db_user)
         db.session.commit()
 
@@ -138,7 +222,7 @@ def login():
         return jsonify({ 'err_msg' : 'Login failed!'}), 401
 
     try:
-        user = Users.query.filter_by(email=login_email).first()
+        user = User.query.filter_by(email=login_email).first()
     except:
         return jsonify({ 'err-msg' : 'Do not exit input email'})
 
@@ -159,7 +243,7 @@ def test(current_user):
 def navbar():
     email = request.form['email']
 
-    user = Users.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()
 
     if not user:
         return render_template('section/no_user_navbar.html')
@@ -173,7 +257,13 @@ def logout():
 @app.route('/become-a-host/room', methods=['POST'])
 @login_required
 def room(current_user):
-    return render_template('become-a-host/room.html', user=current_user)
+    categories = Category.query.all()
+    return render_template('become-a-host/room.html', user=current_user, categories=categories)
+
+@app.route('/subcategories', methods=['GET'])
+def subcategories():
+    subs = Subcategory.query.all()
+    return jsonify([i.serialize for i in subs])
 
 @app.route('/become-a-host/bedrooms', methods=['POST'])
 @login_required
@@ -182,6 +272,20 @@ def bedrooms(current_user):
     property_type = request.form['property_type']
     room_type = request.form['room_type']
     space_radio = request.form['space_radio']
+
+    user = User.query.filter_by(email=current_user.email).first()
+    if not user:
+        prop = Property(user_id=user.id, room_type=room_type, category=category_type, subcategory=property_type, space_for=space_radio)
+        db.session.add(prop)
+        db.session.commit()
+
+    prop = Property.query.filter_by(user_id=user.id).first()
+    prop.room_type = room_type
+    prop.category=category_type
+    prop.subcategory=property_type
+    prop.space_for=space_radio
+    db.session.add(prop)
+    db.session.commit()
 
     return render_template('become-a-host/bedrooms.html', user=current_user)
 
@@ -194,7 +298,6 @@ def location(current_user):
     bathrooms_cnt = request.form['bathrooms_cnt']
     bathroom_private = request.form['bathroom_private']
 
-    #return jsonify({ 'guest' : guests_cnt, 'bedroom' : how_many_bedrooms, 'bed': beds_cnt, 'bath':bathrooms_cnt, 'private':bathroom_private })
     return render_template('become-a-host/location.html')
 
 @app.route('/become-a-host/location/submit', methods=['POST'])

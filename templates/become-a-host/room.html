@@ -49,12 +49,9 @@
                   <h4>First, let’s narrow things down</h4>
                   <select class="form-control input-lg" name="category_type">
                     <option value="" disabled selected>Select one</option>
-                    <option value="1">중학교</option>
-                    <option value="2">고등학교</option>
-                    <option value="3">대학교</option>
-                    <!-- {% for x in range(1, 32) %}
-                    <option value="{{ x }}">{{ x }}</option>
-                    {% endfor %} -->
+                    {% for cate in categories %}
+                    <option value="{{ cate.id }}">{{ cate.name }}</option>
+                    {% endfor %}
                   </select>
                 </div>
                 <div class="form-group">
@@ -98,17 +95,11 @@
             <div class="col-md-6">
             </div>
             <div class="col-md-3">
-              <button type="button" class="btn btn-primary btn-lg btn-block disabled" id="room_next_btn">Next</button>
+              <button type="button" class="btn btn-primary btn-lg btn-block" disabled="disabled" id="room_next_btn">Next</button>
             </div>
           </div>
         </div>
-        <!-- <div class="col-md-5 column-two room_content_right">
-          <div class="col-md-9">
-            <p class="lead">{{ user.firstname }}</p>
-            <p class="lead">{{ user.lastname }}</p>
-            <p class="lead">{{ user.email }}</p>
-          </div>
-        </div> -->
+
       </div>
     </div><!-- /.container -->
 

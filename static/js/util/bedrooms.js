@@ -32,6 +32,13 @@ $(document).ready(function(){
     minus(id);
   });
 
+  //When the radio button is selected, the next btn is activated.
+  $( 'input[name="bathroom_private"]:radio' ).change( function() {
+    bathroom_private = $(this).val();
+
+    $('#bedrooms_next_btn').removeAttr("disabled");
+  });
+
   //form btn submit. adding idToken.
   $('#bedrooms_next_btn').click(function() {
     event.preventDefault();

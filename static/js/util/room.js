@@ -1,10 +1,18 @@
 $(document).ready(function(){
   var idToken;
   chk_idToken();
-  // $("#room_type").hide();
-  // $("#space_radio").hide();
+  $("#room_type").hide();
+  $("#space_radio").hide();
+
   var category_type_val;
   var property_type_val;
+  var obj;
+  var cate1;
+  var cate2;
+  var cate3;
+  var cate4;
+  var cate5;
+  var cate6;
   var room_type_val = 'entire';
   var space_radio;
 
@@ -23,6 +31,34 @@ $(document).ready(function(){
     });
   }
 
+  var req = $.get("/subcategories");
+  req.done(function(data){
+    var temp_data = JSON.stringify(data);
+    obj = JSON.parse(temp_data);
+
+    //category_id별로 html작성하여 str로 저장
+    for (var i=0; i<obj.length; i++){
+      if (obj[i].category_id == 1){
+        cate1 +='<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+      if (obj[i].category_id == 2){
+        cate2 += '<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+      if (obj[i].category_id == 3){
+        cate3 += '<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+      if (obj[i].category_id == 4){
+        cate4 += '<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+      if (obj[i].category_id == 5){
+        cate5 += '<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+      if (obj[i].category_id == 6){
+        cate6 += '<option value="'+obj[i].id+'">'+ obj[i].name +'</option>';
+      }
+    }
+  });
+
   $("select[name=category_type]").change(function() {
    var temp = $("select[name=property_type]");
    temp.prop( "disabled", false );
@@ -32,33 +68,33 @@ $(document).ready(function(){
    temp.append('<option value="" disabled selected>Select property type</option>');
 
    if(category_type_val == '1'){
-    temp.append('<option value="A">A중학교</option>');
-    temp.append('<option value="B">B중학교</option>');
-    temp.append('<option value="C">C중학교</option>');
+    temp.append(cate1);
    }
    if(category_type_val == '2'){
-    temp.append('<option value="AH">A고등학교</option>');
-    temp.append('<option value="BH">B고등학교</option>');
-    temp.append('<option value="CH">C고등학교</option>');
+    temp.append(cate2);
    }
    if(category_type_val == '3'){
-    temp.append('<option value="AU">A대학교</option>');
-    temp.append('<option value="BU">B대학교</option>');
-    temp.append('<option value="CU">C대학교</option>');
+    temp.append(cate3);
+   }
+   if(category_type_val == '4'){
+    temp.append(cate4);
+   }
+   if(category_type_val == '5'){
+    temp.append(cate5);
+   }
+   if(category_type_val == '6'){
+    temp.append(cate6);
    }
   });
 
   $("select[name=property_type]").change(function() {
     property_type_val = $(this).val();
 
-    if(property_type_val == "A"){
-      $("#helpBlock").text('A middle school');
-    }
-    if(property_type_val == "B"){
-      $("#helpBlock").text('B middle school');
-    }
-    // $("#room_type").show();
-    // $("#space_radio").show();
+    //obj는 0에서 시작하므로 -1
+    $("#helpBlock").text(obj[property_type_val - 1].description);
+
+    $("#room_type").show();
+    $("#space_radio").show();
   });
 
   $("select[name=room_type]").change(function() {
@@ -69,9 +105,10 @@ $(document).ready(function(){
   //When the radio button is selected, the next btn is activated.
   $( 'input[name="space_radio"]:radio' ).change( function() {
     space_radio = $(this).val();
-    // console.log(space_radio);
-    if(category_type_val != null && property_type_val != null){
-      $('#room_next_btn').removeClass('disabled');
+
+    // next button activation
+    if(property_type_val != null){
+      $('#room_next_btn').removeAttr("disabled");
     }
   });
 
