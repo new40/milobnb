@@ -2,6 +2,15 @@ $(document).ready(function(){
   var idToken;
   chk_idToken();
 
+  // if logged in and count is more than 1, minus button activates
+  var arry = ["guests", "beds", "bathrooms"];
+  $.each(arry, function(index, value){
+    var cnt = $("#"+ value +"_cnt_val").text();
+    if (cnt > 1){
+      $("#"+ value +"_cnt_btn_minus").removeClass('disabled');
+    }
+  });
+
   $("#guests_cnt_btn_plus").on("click", function() {
     var id = "guests";
     plus(id);

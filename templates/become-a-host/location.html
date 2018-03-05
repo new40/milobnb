@@ -52,21 +52,37 @@
                 </div>
                 <div class="form-group">
                   <h4>Street Address</h4>
-                  <input type="text" class="form-control input-lg" name="street_address" id="street_address" placeholder="e.g. 123Main St.">
+                  {% if prop.address %}
+                    <input type="text" class="form-control input-lg" name="street_address" id="street_address" value="{{ prop.address }}" placeholder="e.g. 123Main St.">
+                  {% else %}
+                    <input type="text" class="form-control input-lg" name="street_address" id="street_address" placeholder="e.g. 123Main St.">
+                  {% endif %}
                 </div>
                 <div class="form-group">
                   <h4>Apt, Suite, Bldg. (optional)</h4>
-                  <input type="text" class="form-control input-lg" name="apt_address" id="apt_address" placeholder="e.g. Apt #7">
+                  {% if prop.address %}
+                    <input type="text" class="form-control input-lg" name="apt_address" id="apt_address" value="{{ prop.add_opt }}" placeholder="e.g. Apt #7">
+                  {% else %}
+                    <input type="text" class="form-control input-lg" name="apt_address" id="apt_address" placeholder="e.g. Apt #7">
+                  {% endif %}
                 </div>
                 <div class="form-group">
                   <div class="row">
                     <div class="col-md-6">
                       <h4>City</h4>
-                      <input type="text" class="form-control input-lg" name="city" id="city" placeholder="e.g. San Francisco">
+                      {% if prop.address %}
+                        <input type="text" class="form-control input-lg" name="city" id="city" value="{{ prop.city }}" placeholder="e.g. San Francisco">
+                      {% else %}
+                        <input type="text" class="form-control input-lg" name="city" id="city" placeholder="e.g. San Francisco">
+                      {% endif %}
                     </div>
                     <div class="col-md-6">
                       <h4>State</h4>
-                      <input type="text" class="form-control input-lg" name="state" id="state" placeholder="e.g. CA">
+                      {% if prop.address %}
+                        <input type="text" class="form-control input-lg" name="state" id="state" value="{{ prop.state }}" placeholder="e.g. CA">
+                      {% else %}
+                        <input type="text" class="form-control input-lg" name="state" id="state" placeholder="e.g. CA">
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -74,7 +90,11 @@
                   <div class="row">
                     <div class="col-md-6">
                       <h4>ZIP Code</h4>
-                      <input type="text" class="form-control input-lg" name="zip" id="zip" placeholder="e.g. 94103">
+                      {% if prop.address %}
+                        <input type="text" class="form-control input-lg" name="zip" id="zip" value="{{ prop.zip_code }}" placeholder="e.g. 94103">
+                      {% else %}
+                        <input type="text" class="form-control input-lg" name="zip" id="zip" placeholder="e.g. 94103">
+                      {% endif %}
                     </div>
                     <div class="col-md-6">
                     </div>

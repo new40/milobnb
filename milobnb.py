@@ -273,15 +273,18 @@ def subcategories():
 @app.route('/become-a-host/bedrooms', methods=['POST'])
 @login_required
 def bedrooms(current_user):
+    bedroom_cnt_array=['Studio','1','2','3','4','5','6','7','8','9','10']
+
     category_type = request.form['category_type']
     property_type = request.form['property_type']
     room_type = request.form['room_type']
     space_radio = request.form['space_radio']
 
     user = User.query.filter_by(email=current_user.email).first()
+    user_prop = Property.query.filter_by(user_id=user.id).first()
 
     #if new user, insert
-    if not user:
+    if not user_prop:
         prop = Property(user_id=user.id, room_type=room_type, category=category_type, subcategory=property_type, space_for=space_radio)
         db.session.add(prop)
         db.session.commit()
@@ -295,7 +298,7 @@ def bedrooms(current_user):
     db.session.add(prop)
     db.session.commit()
 
-    return render_template('become-a-host/bedrooms.html', prop=prop)
+    return render_template('become-a-host/bedrooms.html', prop=prop, cnt=bedroom_cnt_array)
 
 @app.route('/become-a-host/location', methods=['POST'])
 @login_required

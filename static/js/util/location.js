@@ -269,8 +269,16 @@ $(document).ready(function() {
           .prop('selected', isSelected);
       $select.append($option);
     });
-    $("#state").val(data.state);
-    $("#city").val(data.city);
+
+    var temp_state = $("#state").val();
+    var temp_city = $("#city").val();
+
+    if (temp_city == ""){
+      $("#city").val(data.city);
+    }
+    if (temp_state == "") {
+      $("#state").val(data.state);
+    }
   });
 
   $('#location_next_btn').click(function() {

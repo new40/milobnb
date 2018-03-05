@@ -55,7 +55,7 @@
                         <button type="button" class="btn btn-warning btn-circle disabled" id="guests_cnt_btn_minus"><i class="glyphicon glyphicon-minus"></i></button>
                       </div>
                       <div class="col-md-2">
-                        {% if prop.id %}
+                        {% if prop.guests_cnt %}
                           <p class="h4 text-center" id="guests_cnt_val">{{ prop.guests_cnt }}</p>
                           <input type="hidden" name="guests_cnt" id="guests_cnt" value="{{ prop.guests_cnt }}">
                         {% else %}
@@ -104,7 +104,7 @@
                         <button type="button" class="btn btn-warning btn-circle disabled" id="beds_cnt_btn_minus"><i class="glyphicon glyphicon-minus"></i></button>
                       </div>
                       <div class="col-md-2">
-                        {% if prop.id %}
+                        {% if prop.bed_cnt %}
                           <p class="h4 text-center" name="beds_cnt" id="beds_cnt_val">{{ prop.bed_cnt }}</p>
                           <input type="hidden" name="beds_cnt" id="beds_cnt" value="{{ prop.bed_cnt }}">
                         {% else %}
@@ -129,7 +129,7 @@
                         <button type="button" class="btn btn-warning btn-circle disabled" id="bathrooms_cnt_btn_minus"><i class="glyphicon glyphicon-minus"></i></button>
                       </div>
                       <div class="col-md-2">
-                        {% if prop.id %}
+                        {% if prop.bathroom_cnt %}
                           <p class="h4 text-center" name="bathrooms_cnt" id="bathrooms_cnt_val">{{ prop.bathroom_cnt }}</p>
                           <input type="hidden" name="bathrooms_cnt" id="bathrooms_cnt" value="{{ prop.bathroom_cnt }}">
                         {% else %}
