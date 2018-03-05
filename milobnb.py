@@ -70,12 +70,14 @@ class Property(db.Model):
     address = db.Column(db.Text)
     add_opt = db.Column(db.Text)
     zip_code = db.Column(db.String(50))
+    google_address = db.Column(db.String(255))
     latitude = db.Column(db.String(50))
     longitude = db.Column(db.String(50))
+    guests_cnt = db.Column(db.String(5))
     bedroom_cnt = db.Column(db.String(10))
-    bed_cnt = db.Column(db.String(10))
-    bethroom_cnt = db.Column(db.String(10))
-    accomodates_cnt = db.Column(db.String(10))
+    bed_cnt = db.Column(db.String(5))
+    bathroom_cnt = db.Column(db.String(5))
+    private_bathroom = db.Column(db.String(15))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     min_stay = db.Column(db.SmallInteger)
@@ -258,7 +260,10 @@ def logout():
 @login_required
 def room(current_user):
     categories = Category.query.all()
-    return render_template('become-a-host/room.html', user=current_user, categories=categories)
+    subcate = Subcategory.query.all()
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    return render_template('become-a-host/room.html', user=current_user, categories=categories, subcate=subcate, prop=prop)
 
 @app.route('/subcategories', methods=['GET'])
 def subcategories():
@@ -274,11 +279,14 @@ def bedrooms(current_user):
     space_radio = request.form['space_radio']
 
     user = User.query.filter_by(email=current_user.email).first()
+
+    #if new user, insert
     if not user:
         prop = Property(user_id=user.id, room_type=room_type, category=category_type, subcategory=property_type, space_for=space_radio)
         db.session.add(prop)
         db.session.commit()
 
+    # if current user, update
     prop = Property.query.filter_by(user_id=user.id).first()
     prop.room_type = room_type
     prop.category=category_type
@@ -287,33 +295,44 @@ def bedrooms(current_user):
     db.session.add(prop)
     db.session.commit()
 
-    return render_template('become-a-host/bedrooms.html', user=current_user)
+    return render_template('become-a-host/bedrooms.html', prop=prop)
 
-@app.route('/become-a-host/location', methods=['GET', 'POST'])
+@app.route('/become-a-host/location', methods=['POST'])
 @login_required
 def location(current_user):
     guests_cnt = request.form['guests_cnt']
-    how_many_bedrooms = request.form['how_many_bedrooms']
-    beds_cnt = request.form['beds_cnt']
-    bathrooms_cnt = request.form['bathrooms_cnt']
+    bedroom_cnt = request.form['how_many_bedrooms']
+    bed_cnt = request.form['beds_cnt']
+    bathroom_cnt = request.form['bathrooms_cnt']
     bathroom_private = request.form['bathroom_private']
 
-    return render_template('become-a-host/location.html')
+    user = User.query.filter_by(email=current_user.email).first()
+
+    prop = Property.query.filter_by(user_id=user.id).first()
+    prop.guests_cnt = guests_cnt
+    prop.bedroom_cnt = bedroom_cnt
+    prop.bed_cnt=bed_cnt
+    prop.bathroom_cnt=bathroom_cnt
+    prop.private_bathroom=bathroom_private
+    db.session.add(prop)
+    db.session.commit()
+
+    return render_template('become-a-host/location.html', prop=prop)
 
 @app.route('/become-a-host/location/submit', methods=['POST'])
-def location_submit():
-    country_region = request.form['country_region']
+@login_required
+def location_submit(current_user):
+    country = request.form['country_region']
     street = request.form['street_address']
-    apt = request.form['apt_address']
+    add_opt = request.form['apt_address']
     city = request.form['city']
     state = request.form['state']
     zip_code = request.form['zip']
 
-    if not apt:
-        address = street + ", " + city + ", " + state
-    else:
-        address = apt + ", " + street + ", " + city + ", " + state
+    # make address from request data
+    address = street + ", " + city + ", " + state
 
+    # google map
     search_payload = {"key":googleMap_key, "query":address}
     search_req = requests.get(search_url, params=search_payload)
     search_json = search_req.json()
@@ -324,18 +343,32 @@ def location_submit():
     details_resp = requests.get(details_url, params=details_payload)
     details_json = details_resp.json()
 
-    #TODO : insert data to DB & deprive id(param)
+    #insert data to DB & deprive id(param)
+    user = User.query.filter_by(email=current_user.email).first()
 
-    # return jsonify({ 'address' : details_json["result"]["formatted_address"], "url": details_json["result"]["geometry"]["location"], "postCode": details_json["result"]["address_components"][5]["long_name"] })
-    return redirect(url_for('location_saved', id=202020, post=details_json["result"]["address_components"][5]["long_name"], add=details_json["result"]["formatted_address"], loc=details_json["result"]["geometry"]["location"]))
+    prop = Property.query.filter_by(user_id=user.id).first()
+    prop.country = details_json["result"]["address_components"][4]["short_name"]
+    prop.address = details_json["result"]["address_components"][0]["long_name"] + " " + details_json["result"]["address_components"][1]["long_name"]
+    prop.add_opt = add_opt
+    prop.city = details_json["result"]["address_components"][2]["long_name"]
+    prop.state = details_json["result"]["address_components"][3]["long_name"]
+    prop.zip_code = details_json["result"]["address_components"][5]["long_name"]
+    prop.google_address = details_json["result"]["formatted_address"]
+    prop.latitude = details_json["result"]["geometry"]["location"]["lat"]
+    prop.longitude = details_json["result"]["geometry"]["location"]["lng"]
+    db.session.add(prop)
+    db.session.commit()
+
+    # return jsonify(details_json)
+    return redirect(url_for('location_saved', post=details_json["result"]["address_components"][5]["long_name"], add=details_json["result"]["formatted_address"], loc=details_json["result"]["geometry"]["location"]))
 
 @app.route('/geo', methods=['GET'])
 def geo():
     geo = geocoder.ip('me')
     return jsonify({ 'city':geo.city, 'country':geo.country, 'state':geo.state})
 
-@app.route('/become-a-host/<int:id>/location')
-def location_saved(id):
+@app.route('/become-a-host/location')
+def location_saved():
     return render_template('become-a-host/location_map.html', address=request.args.get('add'), post=request.args.get('post'), loc=request.args.get('loc'))
 
 @app.route('/become-a-host/amenities', methods=['POST'])

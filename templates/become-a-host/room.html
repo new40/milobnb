@@ -50,7 +50,10 @@
                   <select class="form-control input-lg" name="category_type">
                     <option value="" disabled selected>Select one</option>
                     {% for cate in categories %}
-                    <option value="{{ cate.id }}">{{ cate.name }}</option>
+                      {% if cate.id == prop.category %}
+                        <option value="{{ cate.id }}" selected>{{ cate.name }}</option>
+                      {% endif %}
+                      <option value="{{ cate.id }}">{{ cate.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -58,8 +61,23 @@
                   <h4>Now choose a property type</h4>
                   <select class="form-control input-lg" name="property_type" aria-describedby="helpBlock">
                     <option value="" disabled selected>Select property type</option>
+                    {% for sub in subcate %}
+                      {% if sub.category_id == prop.category %}
+                        {% if sub.id == prop.subcategory %}
+                          <option value="{{ sub.id }}" selected>{{ sub.name }}</option>
+                        {% else %}
+                          <option value="{{ sub.id }}">{{ sub.name }}</option>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
                   </select>
-                  <span id="helpBlock" class="help-block"></span>
+                  {% for sub in subcate %}
+                    {% if sub.id == prop.subcategory %}
+                      <span id="helpBlock1" class="help-block">{{ sub.description }}</span>
+                    {% else %}
+                      <span id="helpBlock" class="help-block"></span>
+                    {% endif %}
+                  {% endfor %}
                 </div>
                 <div class="form-group" id="room_type">
                   <h4>What will guests have?</h4>
