@@ -44,13 +44,39 @@
           <h3>What amenities do you offer?</h3>
           <form action="/become-a-host/step1" method="POST" id="amenities_form" style="margin-top:30px;">
             <div class="form-group" id="amenities_list">
-              <div class="checkbox input-lg" style="margin-bottom:30px;">
-                <label>
-                  <input type="checkbox" value="Essentials">
-                  Essentials
-                  <h5>Towels, bed sheets, soap, toilet paper, and pillows</h5>
-                </label>
-              </div>
+              {% if chk_ame %}
+                {% for am in ame %}
+                  <div class="checkbox input-lg" style="margin-bottom: 15px;">
+                    <label>
+                      {% for chk_am in chk_ame %}
+                        {% if am.id == chk_am.amenity_id %}
+                          <input type="checkbox" name="amenity" value="{{ am.id }}" checked>{{ am.name }}
+
+                        {% else %}
+                          <input type="checkbox" name="amenity" value="{{ am.id }}">{{ am.name }}
+
+                        {% endif %}
+                        {% break %}
+                      {% endfor %}
+
+                      {% if am.text %}
+                        <h5 style="margin-top: 5px;">{{ am.text }}</h5>
+                      {% endif %}
+                    </label>
+                  </div>
+                {% endfor %}
+              {% else %}
+                {% for am in ame %}
+                  <div class="checkbox input-lg" style="margin-bottom: 15px;">
+                    <label>
+                      <input type="checkbox" name="amenity" value="{{ am.id }}">{{ am.name }}
+                      {% if am.text %}
+                        <h5 style="margin-top: 5px;">{{ am.text }}</h5>
+                      {% endif %}
+                    </label>
+                  </div>
+                {% endfor %}
+              {% endif %}
             </div>
           </form>
           <hr class="divide_line">
