@@ -56,7 +56,7 @@
                       </div>
                       <div class="col-md-2">
                         {% if prop.id %}
-                          <p class="h4 text-center" id="guests_cnt_val">1</p>
+                          <p class="h4 text-center" id="guests_cnt_val">{{ prop.guests_cnt }}</p>
                           <input type="hidden" name="guests_cnt" id="guests_cnt" value="{{ prop.guests_cnt }}">
                         {% else %}
                           <p class="h4 text-center" id="guests_cnt_val">1</p>
@@ -72,10 +72,24 @@
                 <div class="form-group">
                   <h4>How many bedrooms can guests use?</h4>
                   <select class="form-control input-lg" name="how_many_bedrooms">
-                    <option value="studio">Studio</option>
-                    <option value="1bedroom">1bedroom</option>
-                    {% for x in range(2, 10) %}
-                    <option value="{{ x }}bedrooms">{{ x }}bedrooms</option>
+                    {% for c in cnt %}
+                      {% if prop.bedroom_cnt == c %}
+                        {% if c == '1' %}
+                          <option value="{{ c }}" selected>{{ c }}bedroom</option>
+                        {% elif c == 'Studio' %}
+                          <option value="{{ c }}" selected>{{ c }}</option>
+                        {% else %}
+                          <option value="{{ c }}" selected>{{ c }}bedrooms</option>
+                        {% endif %}
+                      {% else %}
+                        {% if c == 1 %}
+                          <option value="{{ c }}">{{ c }}bedroom</option>
+                        {% elif c == 'Studio' %}
+                          <option value="{{ c }}">{{ c }}</option>
+                        {% else %}
+                          <option value="{{ c }}">{{ c }}bedrooms</option>
+                        {% endif %}
+                      {% endif %}
                     {% endfor %}
                   </select>
                 </div>
@@ -90,8 +104,13 @@
                         <button type="button" class="btn btn-warning btn-circle disabled" id="beds_cnt_btn_minus"><i class="glyphicon glyphicon-minus"></i></button>
                       </div>
                       <div class="col-md-2">
-                        <p class="h4 text-center" name="beds_cnt" id="beds_cnt_val">1</p>
-                        <input type="hidden" name="beds_cnt" id="beds_cnt" value="1">
+                        {% if prop.id %}
+                          <p class="h4 text-center" name="beds_cnt" id="beds_cnt_val">{{ prop.bed_cnt }}</p>
+                          <input type="hidden" name="beds_cnt" id="beds_cnt" value="{{ prop.bed_cnt }}">
+                        {% else %}
+                          <p class="h4 text-center" name="beds_cnt" id="beds_cnt_val">1</p>
+                          <input type="hidden" name="beds_cnt" id="beds_cnt" value="1">
+                        {% endif %}
                       </div>
                       <div class="col-md-4">
                         <button type="button" class="btn btn-warning btn-circle" id="beds_cnt_btn_plus"><i class="glyphicon glyphicon-plus"></i></button>
@@ -110,8 +129,13 @@
                         <button type="button" class="btn btn-warning btn-circle disabled" id="bathrooms_cnt_btn_minus"><i class="glyphicon glyphicon-minus"></i></button>
                       </div>
                       <div class="col-md-2">
-                        <p class="h4 text-center" name="bathrooms_cnt" id="bathrooms_cnt_val">1</p>
-                        <input type="hidden" name="bathrooms_cnt" id="bathrooms_cnt" value="1">
+                        {% if prop.id %}
+                          <p class="h4 text-center" name="bathrooms_cnt" id="bathrooms_cnt_val">{{ prop.bathroom_cnt }}</p>
+                          <input type="hidden" name="bathrooms_cnt" id="bathrooms_cnt" value="{{ prop.bathroom_cnt }}">
+                        {% else %}
+                          <p class="h4 text-center" name="bathrooms_cnt" id="bathrooms_cnt_val">1</p>
+                          <input type="hidden" name="bathrooms_cnt" id="bathrooms_cnt" value="1">
+                        {% endif %}
                       </div>
                       <div class="col-md-4">
                         <button type="button" class="btn btn-warning btn-circle" id="bathrooms_cnt_btn_plus"><i class="glyphicon glyphicon-plus"></i></button>
