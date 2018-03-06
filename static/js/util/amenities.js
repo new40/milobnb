@@ -2,14 +2,14 @@ $(document).ready(function() {
   var idToken;
   chk_idToken();
 
-  var amenities = ["Wifi", "Shampoo", "Closet/drawers", "TV", "Heat", "Air Conditioning",
-    "Breakfast, coffee, tea", "Fireplace", "Iron", "Hair dryer",
-  ];
-
-  $.each(amenities, function(index, value){
-    $div = "<div class='checkbox input-lg'><label><input type='checkbox' value='"+ value +"'>"+ value +"</label></div>";
-    $('#amenities_list').append($div);
-  });
+  // var amenities = ["Wifi", "Shampoo", "Closet/drawers", "TV", "Heat", "Air Conditioning",
+  //   "Breakfast, coffee, tea", "Fireplace", "Iron", "Hair dryer",
+  // ];
+  //
+  // $.each(amenities, function(index, value){
+  //   $div = "<div class='checkbox input-lg'><label><input type='checkbox' value='"+ value +"'>"+ value +"</label></div>";
+  //   $('#amenities_list').append($div);
+  // });
 
   $('#amenities_btn').click(function() {
     event.preventDefault();

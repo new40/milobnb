@@ -14,6 +14,8 @@ import geocoder
 
 app = Flask(__name__)
 
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
+
 #related to firebase
 cred = credentials.Certificate('/Users/skw/Documents/milobnb-1512790607233-firebase-adminsdk-u2og9-a54d5f8c48.json')
 firebase_admin.initialize_app(cred, {
@@ -117,14 +119,16 @@ class Subcategory(db.Model):
 class Property_amenities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    amenity_id = db.Column(db.Integer, db.ForeignKey('amenity.id'))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
     status = db.Column(db.SmallInteger, default=1)
-    amenity_id = db.relationship('amenity', backref='amenity_id', lazy='dynamic')
+    # amenities = db.relationship('Amenity', backref='amenity', lazy='dynamic')
 
-class amenity(db.Model):
-    id = db.Column(db.Integer, db.ForeignKey('property_amenities.id'), primary_key=True)
+class Amenity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+    text = db.Column(db.String(255))
     image_url = db.Column(db.String(500))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
@@ -377,11 +381,25 @@ def location_saved():
 @app.route('/become-a-host/amenities', methods=['POST'])
 @login_required
 def amenities(current_user):
-    return render_template('become-a-host/amenities.html')
+    amenities = Amenity.query.all()
+
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+    chk_ame = Property_amenities.query.filter_by(property_id=prop.id).all()
+
+    return render_template('become-a-host/amenities.html', ame=amenities, chk_ame=chk_ame)
 
 @app.route('/become-a-host/step1', methods=['POST'])
 @login_required
 def step1(current_user):
+    amenities = request.form.getlist('amenity')
+
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    for am in amenities:
+        prop_ame = Property_amenities(property_id=prop.id, amenity_id=am)
+        db.session.add(prop_ame)
+        db.session.commit()
+
     return render_template('become-a-host/step1.html', user=current_user)
 
 @app.route('/become-a-host/photo', methods=['POST'])

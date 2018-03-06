@@ -99,7 +99,7 @@ header.masthead .site-heading {
   justify-content: center;
 }
 
-#added_photos{
+.added_photos{
   height: 150px;
   margin-top: 30px;
   display: flex;

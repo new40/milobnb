@@ -98,14 +98,16 @@ class Subcategory(db.Model):
 class Property_amenities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    amenity_id = db.Column(db.Integer, db.ForeignKey('amenity.id'))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
     status = db.Column(db.SmallInteger, default=1)
-    amenity_id = db.relationship('amenity', backref='amenity_id', lazy='dynamic')
+    # amenities = db.relationship('Amenity', backref='amenity_id', lazy='dynamic')
 
-class amenity(db.Model):
-    id = db.Column(db.Integer, db.ForeignKey('property_amenities.id'), primary_key=True)
+class Amenity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+    text = db.Column(db.String(255))
     image_url = db.Column(db.String(500))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)

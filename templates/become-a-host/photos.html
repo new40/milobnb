@@ -51,7 +51,7 @@
                 </label>
               </div>
             </div>
-            <div class="row">
+            <div class="row" id="add_photos_upload_div">
               <div class="col-md-4" id="photos_div">
                 <div class="text-center hidden" id="photos_upload">
                   <label class="btn btn-danger">
@@ -86,10 +86,10 @@
     </script>
 
     <script id="photos-template" type="text/x-handlebars-template">
-      <div class="col-md-4 text-center" id="added_photos" style="position: relative">
+      <div class="col-md-4 text-center added_photos" id="added_photos{{ cnt }}" style="position: relative">
         <img class='img-responsive img-thumbnail has-feedback' src='/static/img/upload/{{ filename }}' style='width:100%;' alt="Responsive image">
-        <a class="btn btn-default btn-xs pull-right delbtn" id="photo_del_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-remove"></i></a>
-        <a class="btn btn-default btn-xs pull-right delbtn hidden" id="photo_remove_btn" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-trash"></i> Remove?</a>
+        <a class="btn btn-default btn-xs pull-right delbtn" name="add_photo_del_btn" id="add_photo_del_btn{{ cnt }}" data-cnt="{{ cnt }}" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-remove"></i></a>
+        <a class="btn btn-default btn-xs pull-right delbtn hidden" id="add_photo_remove_btn{{ cnt }}" data-cnt="{{ cnt }}" data-options="{{ filename }}" style="position: absolute; top: 4px; right: 5px"><i class="glyphicon glyphicon-trash"></i> Remove?</a>
       </div>
     </script>
     {% endraw %}
