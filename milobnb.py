@@ -1,18 +1,19 @@
 #-*- coding:utf-8 -*-
-from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for, session
 import requests, os, json
 import firebase_admin
 from firebase_admin import credentials, auth
 from firebase_admin import storage
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import geocoder
 # from model import *
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
@@ -123,15 +124,26 @@ class Property_amenities(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
     status = db.Column(db.SmallInteger, default=1)
-    # amenities = db.relationship('Amenity', backref='amenity', lazy='dynamic')
+    # amenities = db.relationship('Amenity', backref='amenities', lazy='dynamic')
 
 class Amenity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    Property_amenities_id = db.Column(db.Integer, db.ForeignKey('property_amenities.id'))
     name = db.Column(db.String(255))
     text = db.Column(db.String(255))
     image_url = db.Column(db.String(500))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+
+class Property_images(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    top_image = db.Column(db.String(500))
+    added_image = db.Column(db.String(500))
+    top = db.Column(db.SmallInteger)
+    created = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.SmallInteger, default=1)
 
 def token_required(f):
@@ -173,6 +185,23 @@ def login_required(f):
 
     return decorated
 
+def session_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=1440)
+
+        if 'user' in session:
+            email = session.get('user')
+            current_user = User.query.filter_by(email=email).first()
+        else:
+            # TODO:redirect login page
+            return jsonify({'message' : 'Nothing in session'}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -183,6 +212,8 @@ def testing():
 
 @app.route('/signup', methods=['POST'])
 def signup():
+    session.pop('user', None)
+
     email = request.form['email']
     firstname = request.form['firstname']
     lastname = request.form['lastname']
@@ -215,11 +246,15 @@ def signup():
     uid = user.uid
     #returns a bytes literal and bytes literal are not JSON serializable. convert the byte literal to string using decode()
     custom_token = (auth.create_custom_token(uid)).decode()
+    # create session
+    session['user'] = email
 
     return jsonify({ 'token' : custom_token })
 
 @app.route('/login', methods=['POST'])
 def login():
+    session.pop('user', None)
+
     login_email = request.form['email']
     login_password = request.form['password']
     login_check = request.form['login_check']
@@ -236,14 +271,17 @@ def login():
         user = auth.get_user_by_email(login_email)
         custom_token = (auth.create_custom_token(user.uid)).decode()
 
+        # create session
+        session['user'] = login_email
+
         return jsonify({ 'token' : custom_token })
 
     return jsonify({ 'err-msg' : 'Confirm your email or password'}), 401
 
 @app.route('/test', methods=['GET', 'POST'])
-@token_required
-def test(current_user):
-    return jsonify({ 'email' : current_user.lastname})
+# @session_required
+def test():
+    return jsonify({ 'email' : session['user']})
 
 @app.route('/navbar', methods=['POST'])
 def navbar():
@@ -395,6 +433,11 @@ def step1(current_user):
 
     prop = Property.query.filter_by(user_id=current_user.id).first()
 
+    # if new data is posted, delete last data(reset)
+    Property_amenities.query.filter_by(property_id=prop.id).delete()
+    db.session.commit()
+
+    # insert new data into DB
     for am in amenities:
         prop_ame = Property_amenities(property_id=prop.id, amenity_id=am)
         db.session.add(prop_ame)
@@ -405,19 +448,52 @@ def step1(current_user):
 @app.route('/become-a-host/photo', methods=['POST'])
 @login_required
 def photo(current_user):
-    return render_template('become-a-host/photos.html', user=current_user)
+    # if request.method == 'GET':
+    #     return session.get('user')
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
+    prop = Property_images.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('become-a-host/photos.html', prop=prop)
+
+@app.route('/upload', methods=['POST'])
+@token_required
+def upload(current_user):
     # if request.method == 'POST':
     # TODO: add a folder name using date
     filename = photos.save(request.files['file'])
-    return filename
-    # return "Do not uploaded"
+    top = request.form['top']
 
-@app.route('/delete/<filename>')
-def delete(filename):
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    # insert current photo data
+    if top == "top":
+        prop_img = Property_images(property_id=prop.id, user_id=current_user.id, top_image=filename, top=1)
+    else:
+        prop_img = Property_images(property_id=prop.id, user_id=current_user.id, added_image=filename, top=0)
+
+    db.session.add(prop_img)
+    db.session.commit()
+
+    return filename
+
+@app.route('/delete/<filename>', methods=['GET'])
+@token_required
+def delete(current_user, filename):
+    top = request.args.get('top')
+    # filename = request.form.get('filename')
+
     os.remove(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], filename))
+
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    # delete last photo data
+    if top == "top":
+        Property_images.query.filter_by(property_id=prop.id, top_image=filename).delete()
+    else:
+        Property_images.query.filter_by(property_id=prop.id, added_image=filename).delete()
+
+    db.session.commit()
+
     return jsonify({'result': True})
 
 if __name__ == '__main__':
