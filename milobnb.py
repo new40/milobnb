@@ -146,6 +146,17 @@ class Property_images(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.SmallInteger, default=1)
 
+class Title_description(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    place_name = db.Column(db.String(100))
+    place_summary = db.Column(db.String(500))
+    families_place = db.Column(db.SmallInteger)
+    groups_place = db.Column(db.SmallInteger)
+    friends_place = db.Column(db.SmallInteger)
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -495,6 +506,45 @@ def delete(current_user, filename):
     db.session.commit()
 
     return jsonify({'result': True})
+
+@app.route('/become-a-host/title_description', methods=['POST'])
+@login_required
+def title_description(current_user):
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    title_description = Title_description.query.filter_by(property_id=prop.id).first()
+
+    return render_template('become-a-host/title_description.html', title=title_description)
+
+@app.route('/become-a-host/profile-photo', methods=['POST'])
+@login_required
+def profile_photo(current_user):
+    place_name = request.form['place_name']
+    place_summary = request.form['place_summary']
+    places = request.form.getlist('place')
+
+    prop = Property.query.filter_by(user_id=current_user.id).first()
+
+    chk_prop = Title_description.query.filter_by(property_id=prop.id).first()
+
+    # if you have last data. delete data
+    if chk_prop:
+        Title_description.query.filter_by(property_id=prop.id).delete()
+        db.session.commit()
+
+    # insert new data
+    for place in places:
+        if (place == 1):
+            temp_title = Title_description(property_id=prop.id, place_name=place_name, place_summary=place_summary, families_place=1, groups_place=0, friends_place=0)
+        elif (place == 2):
+            temp_title = Title_description(property_id=prop.id, place_name=place_name, place_summary=place_summary, families_place=0, groups_place=1, friends_place=0)
+        else:
+            temp_title = Title_description(property_id=prop.id, place_name=place_name, place_summary=place_summary, families_place=0, groups_place=0, friends_place=1)
+
+    db.session.add(temp_title)
+    db.session.commit()
+
+    return render_template('become-a-host/profile-photo.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -94,6 +94,23 @@ $(document).ready(function() {
     });
   });
 
+  $('#photo_btn').click(function() {
+    event.preventDefault();
+    chk_idToken();
+    if (idToken != null) {
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'hidden_input_token')
+        .attr('value', idToken)
+       .appendTo('#photo_form');
+       $('#photo_form').submit();
+    } else {
+      console.log("plz log in!(photo_page)");
+      // $('#logInModal').modal('show');
+    }
+  });
+
+
+// =====function========================================
   // 서버에 사진을 보내는 function
   function send_photo(id){
     chk_idToken();

@@ -124,5 +124,16 @@ class Property_images(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.SmallInteger, default=1)
 
+class Title_description(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    place_name = db.Column(db.String(100))
+    place_summary = db.Column(db.String(500))
+    families_place = db.Column(db.SmallInteger)
+    groups_place = db.Column(db.SmallInteger)
+    friends_place = db.Column(db.SmallInteger)
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime)
+
 if __name__ == '__main__':
     manager.run()
