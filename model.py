@@ -102,15 +102,26 @@ class Property_amenities(db.Model):
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
     status = db.Column(db.SmallInteger, default=1)
-    # amenities = db.relationship('Amenity', backref='amenity_id', lazy='dynamic')
+    # amenities = db.relationship('Amenity', backref='amenities', lazy='dynamic')
 
 class Amenity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    Property_amenities_id = db.Column(db.Integer, db.ForeignKey('property_amenities.id'))
     name = db.Column(db.String(255))
     text = db.Column(db.String(255))
     image_url = db.Column(db.String(500))
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime)
+    status = db.Column(db.SmallInteger, default=1)
+
+class Property_images(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    top_image = db.Column(db.String(500))
+    added_image = db.Column(db.String(500))
+    top = db.Column(db.SmallInteger)
+    created = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.SmallInteger, default=1)
 
 if __name__ == '__main__':

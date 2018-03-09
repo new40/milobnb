@@ -109,5 +109,35 @@
     <script src="{{ url_for('static', filename='js/util/upload_photos.js') }}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+
+    <!-- When GET request, manipulate handlebars
+    ================================================== -->
+
+    {% for pr in prop %}
+      {% if pr.top == 1 %}
+        <script>
+          var data = {filename: "{{ pr.top_image }}" };
+          var source = $("#top_photo-template").html();
+          var template = Handlebars.compile(source);
+          var temp_img = template(data);
+
+          $("#top_photos_upload").hide();
+          $("#top_photos_upload_div").append(temp_img);
+          $("#photos_upload").removeClass("hidden");
+        </script>
+      {% else %}
+        <script>
+        var smallPhoto_cnt = $("#add_photos_upload_div div").length;
+
+        var data = {filename: "{{ pr.added_image }}", cnt: smallPhoto_cnt - 1};
+        var source = $("#photos-template").html();
+        var template = Handlebars.compile(source);
+        var temp_img = template(data);
+
+        $("#photos_div").before(temp_img);
+        </script>
+      {% endif %}
+    {% endfor %}
+
   </body>
 </html>

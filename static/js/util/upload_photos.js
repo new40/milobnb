@@ -39,7 +39,14 @@ $(document).ready(function() {
 
     $(document).on('click', '#photo_remove_btn', function(){
       var filename = $(this).data("options");
-      var req = $.get("/delete/"+filename);
+
+      $.ajaxSetup({
+        headers: {
+            "Content-Type": "application/json",
+            "x-access-token": idToken
+          }
+      });
+      var req = $.getJSON('/delete/'+filename, {top: 'top'});
       req.done(function(result){
         if(result){
           $("#top_photo").remove();
@@ -66,7 +73,14 @@ $(document).ready(function() {
 
     $(document).on('click', '#add_photo_remove_btn'+cnt, function(){
       var filename = $(this).data("options");
-      var req = $.get("/delete/"+filename);
+      // var req = $.post("/delete", { "where": top, "filename": filename, "hidden_input_token": idToken });
+      $.ajaxSetup({
+        headers: {
+            "Content-Type": "application/json",
+            "x-access-token": idToken
+          }
+      });
+      var req = $.getJSON('/delete/'+filename, {top: 'add'});
       req.done(function(result){
         if(result){
           if(smallPhoto_cnt <= 3){
@@ -82,17 +96,24 @@ $(document).ready(function() {
 
   // 서버에 사진을 보내는 function
   function send_photo(id){
+    chk_idToken();
     var result;
     var formData = new FormData();
     formData.append( "file", $("#" + id).prop("files")[0] );
+    if (id === "top_add_photo"){
+      formData.append( "top", "top" );
+    } else {
+      formData.append( "top", "added" );
+    }
 
     if (idToken != null) {
+      $.ajaxSetup({ async:false });
       $.ajax({
         url: '/upload',
         type: 'POST',
         dataType : "text",
         //TODO:async is deprecated!
-        async: false,
+        // async: false,
         headers: {
           "x-access-token": idToken
         },
@@ -100,10 +121,11 @@ $(document).ready(function() {
         processData : false,
         contentType : false,
         success: function(response) {
-          console.log("filename : " + response);
+          // console.log("filename : " + response);
           result = response;
         }
       });
+      $.ajaxSetup({ async:true });
     } else {
       //TODO : redirect to login page
     }
