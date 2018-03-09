@@ -43,19 +43,18 @@
         <div class="col-md-6 col-md-offset-3 room_content_left">
           <form action="/become-a-host/profile-photo" method="POST" style="margin-top:30px;">
             <h3>Add your photo</h3>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-5">
-                  <img class="img-circle" src="{{ url_for('static', filename='img/user_pic.png') }}" alt="Generic placeholder image" width="140" height="140">
+            <div class="form-group" id="profile_photo_change_div">
+              <div class="row" id="profile_photo_div">
+                <div class="col-md-5 text-center">
+                  <img class="img-circle" src="{{ url_for('static', filename='img/user_pic.png') }}" id="profile_photo" alt="Generic placeholder image" width="140" height="140">
                 </div>
-                <div class="col-md-7">
-                  <label class="btn btn-default btn-lg">
-                    <input type="file" name="photo" id="top_add_photo" style="display: none;"><i class="glyphicon glyphicon-upload"></i> Upload Photos</input>
+                <div class="col-md-7" style="  display: flex; align-items: center; justify-content: center;">
+                  <label class="btn btn-success btn-lg btn-block">
+                    <input type="file" name="profile_photo" id="profile_photo_upload_btn" style="display: none;"><i class="glyphicon glyphicon-upload"></i>  Upload Photos</input>
                   </label>
                 </div>
               </div>
             </div>
-
           </form>
           <hr class="divide_line">
           <div class="row" id="inner_div_footer">
@@ -72,6 +71,22 @@
       </div>
     </div><!-- /.container -->
 
+    {% raw %}
+    <script id="profile_photo-template" type="text/x-handlebars-template">
+      <div class="row" id="profile_photo_added_div">
+        <div class="col-md-5 text-center">
+          <img class="img-circle" src="/static/img/upload/{{ filename }}" id="profile_photo" alt="Generic placeholder image" width="140" height="140">
+          <span class="btn btn-success btn-circle-photo" style="position: absolute; top: 90px; right: 45px"><i class="glyphicon glyphicon-ok"></i></span>
+        </div>
+        <div class="col-md-7">
+          <h4>This photo will be added to your profile. It will alse be seen by hosts or guests-so be sure it doesn't include any personal or sensitive info.</h4>
+          <h5><a href="#" id="change_photo">Change Photo</a></h5>
+        </div>
+        <input type="hidden" id="profile_photo_name" value="{{ filename }}"
+      </div>
+    </script>
+    {% endraw %}
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Bootstrap core JavaScript -->
@@ -79,9 +94,24 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <!-- Firebase JavaScript -->
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <!-- Handlebars JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/milobnb.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/util/profile_photo.js') }}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+
+    {% if user.img_url %}
+      <script>
+        var data = {filename: "{{ user.img_url }}" };
+        var source = $("#profile_photo-template").html();
+        var template = Handlebars.compile(source);
+        var temp_img = template(data);
+
+        $("#profile_photo_div").hide();
+        $("#profile_photo_change_div").append(temp_img);
+      </script>
+    {% endif %}
   </body>
 </html>

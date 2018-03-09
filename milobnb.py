@@ -544,7 +544,42 @@ def profile_photo(current_user):
     db.session.add(temp_title)
     db.session.commit()
 
-    return render_template('become-a-host/profile-photo.html')
+    # send user data to html
+    user = User.query.filter_by(uid=current_user.uid).first()
+
+    return render_template('become-a-host/profile-photo.html', user=user)
+
+@app.route('/upload-profile', methods=['POST'])
+@token_required
+def upload_profile(current_user):
+    # if request.method == 'POST':
+    #TODO: make profile images folder
+    filename = photos.save(request.files['file'])
+
+    user = User.query.filter_by(uid=current_user.uid).first()
+    user.img_url = filename
+    db.session.add(user)
+    db.session.commit()
+
+    return filename
+
+@app.route('/delete-profile-photo/<filename>', methods=['GET'])
+@token_required
+def delete_profile_photo(current_user, filename):
+
+    os.remove(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], filename))
+
+    user = User.query.filter_by(uid=current_user.uid).first()
+    user.img_url = ""
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({'result': True})
+
+@app.route('/become-a-host/verify-phone', methods=['POST'])
+@login_required
+def verify_phone():
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

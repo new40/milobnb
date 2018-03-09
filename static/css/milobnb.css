@@ -79,6 +79,11 @@ header.masthead .site-heading {
   border-radius: 50%;
   overflow:hidden;
 }
+.btn-circle-photo {
+  font-size: 15px;
+  border-radius: 50%;
+  overflow:hidden;
+}
 
 #top_photos_upload{
   height: 300px;
